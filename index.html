@@ -11,7 +11,8 @@
     header { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 20; padding: 12px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .header-top { max-width: 440px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
     .logo-container { display: flex; align-items: center; gap: 6px; }
-    .logo { font-size: 18px; font-weight: 800; color: #FF69B4; }
+    .logo { font-size: 18px; font-weight: 800; color: #FF69B4; outline: none; border-bottom: 1px dashed transparent; }
+    .logo:focus { border-bottom-color: #FF69B4; background: #fff0f5; border-radius: 4px; padding: 0 4px; }
     .clock-badge { font-size: 11px; font-weight: 700; color: #FF69B4; background: #fff0f5; padding: 3px 8px; border-radius: 6px; border: 1px solid #fbcfe8; }
     .revenue-badge { font-size: 16px; font-weight: 800; color: #059669; background: #ecfdf5; padding: 6px 16px; border-radius: 999px; }
     
@@ -49,7 +50,8 @@
 
     .btn-edit-text { position: absolute; top: 12px; right: 12px; background: #f1f5f9; border: none; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; color: #475569; }
 
-    .btn-float { position: fixed; bottom: 24px; right: 24px; background: #FF69B4; color: #fff; border: none; width: 56px; height: 56px; border-radius: 50%; font-size: 32px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 30; cursor: pointer; }
+    /* Cambiado: Botón flotante más arriba */
+    .btn-float { position: fixed; bottom: 90px; right: 24px; background: #FF69B4; color: #fff; border: none; width: 56px; height: 56px; border-radius: 50%; font-size: 32px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 30; cursor: pointer; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; }
     .modal-card { background: #fff; width: 100%; max-width: 380px; border-radius: 20px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
@@ -80,7 +82,8 @@
   <header>
     <div class="header-top">
       <div class="logo-container">
-        <h1 class="logo">💅 Nails Agenda</h1>
+        <!-- Cambiado: Nombre editable directamente haciendo clic -->
+        <h1 class="logo" id="editableTitle" contenteditable="true" spellcheck="false">💅 Nails Agenda</h1>
         <span id="liveClock" class="clock-badge">00:00:00</span>
       </div>
       <span id="totalRevenue" class="revenue-badge">$0.00</span>
@@ -228,6 +231,18 @@
     const formModal = document.getElementById('formModal');
     const menuModal = document.getElementById('menuModal');
     const datePicker = document.getElementById('datePicker');
+    const editableTitle = document.getElementById('editableTitle');
+
+    // Cargar título personalizado guardado
+    const savedTitle = localStorage.getItem('nails_app_title');
+    if (savedTitle) {
+      editableTitle.textContent = savedTitle;
+    }
+
+    // Guardar el título cuando cambie el texto
+    editableTitle.addEventListener('input', () => {
+      localStorage.setItem('nails_app_title', editableTitle.textContent);
+    });
 
     function getTodayString() {
       const today = new Date();
@@ -428,7 +443,6 @@
 
     function resetForm() { document.getElementById('appointmentForm').reset(); document.getElementById('editId').value = ''; document.getElementById('appDate').value = datePicker.value; document.getElementById('modalTitle').textContent = 'Nueva Cita'; currentBase64Image = ''; document.getElementById('imagePreviewContainer').classList.add('hidden'); document.getElementById('deleteBtn').classList.add('hidden'); }
     
-    // Corregido: Cálculo de fecha local para evitar saltos de día
     function changeDate(days) {
       const [y, m, d] = datePicker.value.split('-').map(Number);
       const date = new Date(y, m - 1, d);
